@@ -54,7 +54,7 @@ public class ChatServer {
     // 🔹 Diffuser un message à tous les clients sauf l'expéditeur
     public static synchronized void broadcast(String message, ClientHandler sender) {
         for (ClientHandler client : clients) {
-            if (client != sender) {
+            if (!client.getPseudo().equals(sender.getPseudo())) {
                 client.sendMessage(message);
             }
         }

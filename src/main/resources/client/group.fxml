@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.client.GroupController">
+    <!-- Liste des membres à gauche -->
+    <left>
+        <VBox spacing="5" style="-fx-background-color: #f0f0f0;" alignment="TOP_CENTER">
+            <Label text="Membres" style="-fx-font-weight: bold; -fx-padding: 10 0 0 0;" />
+            <ListView fx:id="membersListView" prefWidth="120" />
+        </VBox>
+    </left>
+    <!-- Zone de messages au centre -->
+    <center>
+        <VBox spacing="5" style="-fx-background-color: #ffffff;">
+            <Label text="Groupe WhatsApp" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 10 0 0 0;" />
+            <ListView fx:id="messagesListView" VBox.vgrow="ALWAYS" />
+            <!-- Champ de saisie et bouton d'envoi -->
+            <HBox spacing="5" style="-fx-padding: 10;">
+                <TextField fx:id="messageTextField" promptText="Écrire un message..." HBox.hgrow="ALWAYS" />
+                <Button fx:id="sendButton" text="Envoyer" />
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane> 

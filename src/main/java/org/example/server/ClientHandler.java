@@ -27,7 +27,8 @@ public class ClientHandler implements Runnable {
     public void run() {
         try {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream(), true);
+           // out = new PrintWriter(socket.getOutputStream(), true);
+            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())),true);
 
             // Demander un pseudo
             out.println("Veuillez entrer votre pseudo : ");
@@ -47,6 +48,10 @@ public class ClientHandler implements Runnable {
             // Vérification dans la BD
             MembreDao membreDao = new MembreDao();
             Membre membre = membreDao.findOrCreate(pseudo);
+            if (membre == null) {
+                out.println("❌ Erreur interne. Connexion annulée.");
+                return;
+            }
 
             // Vérifie si banni
             if (membre.isBanned()) {
@@ -64,16 +69,36 @@ public class ClientHandler implements Runnable {
             // Écoute des messages
             String message;
             while ((message = in.readLine()) != null) {
-                if (message.trim().isEmpty()) continue;
+                try {
+                    if (message.trim().isEmpty()) continue;
 
-                if (contientInjure(message)) {
-                    out.println("⚠ Message bloqué : langage inapproprié.");
-                    continue;
+                    if (contientInjure(message)) {
+                        // Bannir côté base de données
+                        membre.setBanned(true);
+                        membreDao.update(membre); // 🔄 Assure-toi que cette méthode existe dans MembreDao
+
+                        // Message à l'utilisateur
+                        out.println("🚫 Vous avez été banni pour usage de langage inapproprié.");
+                        out.flush();
+
+                        // Notifier les autres
+                        ChatServer.broadcast("🚫 " + pseudo + " a été banni pour langage inapproprié.", this);
+
+                        System.out.println("🚫 " + pseudo + " a été banni pour injure.");
+
+                        break; // 🔚 quitte la boucle => déconnecte l'utilisateur
+                    }
+
+
+
+                    membreDao.save(membre, message); // <--- suspect ici
+                    ChatServer.broadcast(pseudo + " : " + message, this);
+                } catch (Exception e) {
+                    System.err.println("❌ Erreur lors du traitement du message de " + pseudo + " : " + e.getMessage());
+                    e.printStackTrace(); // pour voir la stack complète
                 }
-
-                membreDao.save(membre, message); // sauvegarde en BD
-                ChatServer.broadcast(pseudo + " : " + message, this);
             }
+
 
             // Déconnexion volontaire ou socket fermé
             System.out.println("📴 " + pseudo + " s’est déconnecté proprement.");
@@ -98,9 +123,12 @@ public class ClientHandler implements Runnable {
     }
 
     public void sendMessage(String message) {
+       // out.println("message------------------0000000000" +out);
         if (out != null) {
             try {
                 out.println(message);
+                out.flush();
+                System.out.println("📤 Message envoyé à " + pseudo + " : " + message);
             } catch (Exception e) {
                 System.err.println("❌ Erreur d'envoi à " + pseudo + ": " + e.getMessage());
             }

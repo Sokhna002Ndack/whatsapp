@@ -1,10 +1,13 @@
 package org.example.Dao;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import org.example.model.Membre;
+import org.example.model.Message;
 import org.example.util.JpaUtil;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class MembreDao {
@@ -41,12 +44,46 @@ public class MembreDao {
         return membre;
     }
 
-    public void save(Membre membre, String message) {
+    public void update(Membre membre) {
         EntityManager em = JpaUtil.getEntityManager();
-        em.getTransaction().begin();
-        em.persist(membre);
-        em.getTransaction().commit();
-        em.close();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            tx.begin();
+            em.merge(membre);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+    }
+
+    public void save(Membre membre, String messageContent) {
+        EntityManager em = JpaUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            tx.begin();
+
+            // 🔁 Utiliser merge pour les entités existantes
+            membre = em.merge(membre);
+
+            Message message = new Message();
+            message.setMembre(membre);
+            message.setContenu(messageContent);
+            message.setDateEnvoi(LocalDateTime.now());
+
+            em.persist(message);
+
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            throw new RuntimeException("Erreur lors de l'enregistrement du message", e);
+        } finally {
+            em.close();
+        }
     }
 
     public Membre findByPseudo(String pseudo) {

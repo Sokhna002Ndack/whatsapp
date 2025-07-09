@@ -15,7 +15,7 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/chat.fxml"));
         Scene scene = new Scene(loader.load());
-        stage.setTitle("Chat WhatsApp TCP");
+        stage.setTitle("Chat WhatsApp");
         stage.setScene(scene);
         stage.show();
     }

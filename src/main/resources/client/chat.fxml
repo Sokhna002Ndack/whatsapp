@@ -1,22 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.geometry.Insets?>
 <BorderPane fx:controller="org.example.client.ChatController"
-            xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/8.0.171">
+            xmlns:fx="http://javafx.com/fxml"
+            style="-fx-background-color: #f4f4f4;">
+
+    <!-- Zone de messages -->
     <center>
-        <TextArea fx:id="messageArea" editable="false" wrapText="true"/>
+        <TextArea fx:id="messageArea"
+                  editable="false"
+                  wrapText="true"
+                  style="-fx-control-inner-background: #ffffff;
+                         -fx-font-size: 14px;
+                         -fx-font-family: 'Segoe UI';
+                         -fx-border-radius: 10;
+                         -fx-background-radius: 10;
+                         -fx-padding: 10;" />
     </center>
+
+    <!-- Zone d'entrée et boutons -->
     <bottom>
-        <HBox spacing="10">
+        <HBox spacing="10" alignment="CENTER_LEFT">
             <padding>
-                <Insets top="15" right="15" bottom="15" left="15"/>
+                <Insets top="10" right="15" bottom="10" left="15"/>
             </padding>
 
-            <TextField fx:id="inputField" HBox.hgrow="ALWAYS" promptText="Entrez votre message..."/>
-            <Button text="Envoyer" onAction="#handleSend"/>
+            <!-- Champ de saisie -->
+            <TextField fx:id="inputField"
+                       HBox.hgrow="ALWAYS"
+                       promptText="Écrivez un message..."
+                       style="-fx-background-radius: 10;
+                              -fx-border-radius: 10;
+                              -fx-font-size: 13px;
+                              -fx-padding: 6;" />
+
+            <!-- Bouton Envoyer -->
+            <Button text="Envoyer"
+                    onAction="#handleSend"
+                    style="-fx-background-color: #4CAF50;
+                           -fx-text-fill: white;
+                           -fx-font-weight: bold;
+                           -fx-background-radius: 8;" />
+
+            <!-- Bouton Quitter -->
+            <Button text="Quitter"
+                    onAction="#handleQuit"
+                    style="-fx-background-color: #F44336;
+                           -fx-text-fill: white;
+                           -fx-font-weight: bold;
+                           -fx-background-radius: 8;" />
         </HBox>
     </bottom>
 </BorderPane>
